@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API = 'https://toi-3.onrender.com/api/posts';
+const API = '/api/posts';
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -21,46 +21,56 @@ function App() {
       body: JSON.stringify(newPost)
     });
     const data = await res.json();
-    setPosts([...posts, data]);
+    setPosts([data, ...posts]);
     setNewPost({ title: '', content: '' });
   };
 
-  const upvote = (id) => {
-    setPosts(posts.map(p => p.id === id ? { ...p, upvotes: p.upvotes + 1 } : p));
+  const upvote = async (id) => {
+    const res = await fetch(`${API}/${id}/upvote`, {
+      method: 'POST'
+    });
+    const updated = await res.json();
+    setPosts(posts.map(p => (p.id === id ? updated : p)));
   };
 
   return (
     <div className="App">
-      <h1>🧠 TOI - Talk Of Internet</h1>
+      <header>
+        <h1>🧠 TOI — Talk Of Internet</h1>
+      </header>
 
-      <form onSubmit={handlePost}>
-        <input
-          type="text"
-          placeholder="Title"
-          value={newPost.title}
-          onChange={e => setNewPost({ ...newPost, title: e.target.value })}
-          required
-        />
-        <textarea
-          placeholder="What's on your mind?"
-          value={newPost.content}
-          onChange={e => setNewPost({ ...newPost, content: e.target.value })}
-          required
-        />
-        <button type="submit">Post</button>
-      </form>
+      <section className="form-section">
+        <form onSubmit={handlePost}>
+          <input
+            type="text"
+            placeholder="Post title"
+            value={newPost.title}
+            onChange={e => setNewPost({ ...newPost, title: e.target.value })}
+            required
+          />
+          <textarea
+            placeholder="What do you want to say?"
+            value={newPost.content}
+            onChange={e => setNewPost({ ...newPost, content: e.target.value })}
+            required
+          />
+          <button type="submit">🚀 Post</button>
+        </form>
+      </section>
 
-      <hr />
-
-      <ul>
-        {posts.map(post => (
-          <li key={post.id} className="post">
-            <h3>{post.title}</h3>
-            <p>{post.content}</p>
-            <button onClick={() => upvote(post.id)}>⬆️ {post.upvotes}</button>
-          </li>
-        ))}
-      </ul>
+      <section className="post-list">
+        {posts.length === 0 ? (
+          <p className="empty-state">No posts yet. Be the first to say something!</p>
+        ) : (
+          posts.map(post => (
+            <div className="post-card" key={post.id}>
+              <h2>{post.title}</h2>
+              <p>{post.content}</p>
+              <button onClick={() => upvote(post.id)}>⬆️ {post.upvotes}</button>
+            </div>
+          ))
+        )}
+      </section>
     </div>
   );
 }

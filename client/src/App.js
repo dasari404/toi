@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API = 'https://toi-server.onrender.com/api/posts';
+const API = 'https://toi-3.onrender.com/api/posts';
 
 function App() {
   const [posts, setPosts] = useState([]);

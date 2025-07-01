@@ -33,7 +33,7 @@
 .comment {
   margin-top: 8px;
   padding: 8px;
-  background: white;
+  background: rgb(50, 40, 40);
   border-radius: 6px;
   border: 1px solid #eee;
   font-size: 0.9rem;
